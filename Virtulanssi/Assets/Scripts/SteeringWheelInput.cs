@@ -23,7 +23,7 @@ public class SteeringWheelInput : MonoBehaviour
     }
 
     //Converts input values from the steering wheel and pedals to a more readable -1 to 1 scale
-    void Update()
+    void FixedUpdate()
     {
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0)) // Checks that the steering wheel is connected and that the applictaion's main window is active
         {

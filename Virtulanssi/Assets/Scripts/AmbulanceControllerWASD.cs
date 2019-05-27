@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AmbulanceController : MonoBehaviour
+public class AmbulanceControllerWASD : MonoBehaviour
 {
     public WheelCollider WheelColliderFL;//the wheel colliders
     public WheelCollider WheelColliderFR;
@@ -13,14 +13,6 @@ public class AmbulanceController : MonoBehaviour
     public GameObject FR;
     public GameObject BL;
     public GameObject BR;
-
-    public float wheelInput;
-    public float gasInput;
-    public float breakInput;
-    private float axesMax = 32767f; // the max value for axes rotation and position (pedals and steering wheel);
-
-    public float accelerationResponse; // How fast the car starts to accelerate as you push the acceleration pedal (-1 to 1)
-    public float breakResponse;  // How fast the car starts to decelerate as you push the break pedal (-1 to 1)
 
     public float topSpeed = 250f;//the top speed
     public float maxTorque = 200f;//the maximum torque to apply to wheels
@@ -39,56 +31,24 @@ public class AmbulanceController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        
     }
 
-    void FixedUpdate() 
+    void FixedUpdate() //fixed update is more physics realistic
     {
-
-        Forward = gasInput;
-        Turn = wheelInput;
-        Brake = breakInput;
+        Forward = Input.GetAxis("Vertical");
+        Turn = Input.GetAxis("Horizontal");
+        Brake = Input.GetAxis("Jump");
 
         WheelColliderFL.steerAngle = maxSteerAngle * Turn;
         WheelColliderFR.steerAngle = maxSteerAngle * Turn;
 
         currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000; //formula for calculating speed in kmph
 
-        if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0)) // Checks that the steering wheel is connected and that the applictaion's main window is active
-        {
-            LogitechGSDK.DIJOYSTATE2ENGINES rec;
-            rec = LogitechGSDK.LogiGetStateUnity(0); // Stores info about the device's positional information for axes, POVs and buttons.
-
-            wheelInput = rec.lX / axesMax; // Normalize x-axis position value (-1 to 1) 
-
-            if (rec.lY > (accelerationResponse * axesMax))
-            {
-                gasInput = 0;
-            }
-            else if (rec.lY < (accelerationResponse * axesMax))
-            {
-                gasInput = rec.lY / -axesMax; // Normalize y-axis position value (-1 to 1) 
-            }
-            if (rec.lRz > (breakResponse * axesMax))
-            {
-                breakInput = 0;
-            }
-            else if (rec.lRz < (breakResponse * axesMax))
-            {
-                breakInput = rec.lRz / -axesMax; // Normalize z-axis position value (-1 to 1) 
-            }
-        }
-
         if (currentSpeed < topSpeed)
         {
             WheelColliderBL.motorTorque = maxTorque * Forward;//run the wheels on back left and back right
             WheelColliderBR.motorTorque = maxTorque * Forward;
         }//the top speed will not be accurate but will try to slow the car before top speed
-
-        else
-        {
-            Debug.Log("No steering wheel connected.");
-        }
 
         WheelColliderBL.brakeTorque = maxBrakeTorque * Brake;
         WheelColliderBR.brakeTorque = maxBrakeTorque * Brake;

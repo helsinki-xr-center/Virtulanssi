@@ -7,7 +7,7 @@ public class CameraFollow : MonoBehaviour
     public Transform target;
     public Vector3 offset;
 
-    // Updates the camera position according to the target's position + an offset vector
+    // Updates the camera position and rotation according to the target
     void LateUpdate()
     {
         transform.position = target.position + offset;
