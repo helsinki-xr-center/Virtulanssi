@@ -12,5 +12,9 @@ public class CameraFollow : MonoBehaviour
     {
         transform.position = target.position + offset;
         transform.rotation = target.rotation;
+        if (gameObject.name == "BackCamera")
+        {
+            transform.LookAt(target);
+        }
     }
 }

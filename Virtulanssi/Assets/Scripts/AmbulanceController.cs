@@ -16,14 +16,18 @@ public class AmbulanceController : MonoBehaviour
 
     public float wheelInput;
     public float gasInput;
-    public float breakInput;
+    public float brakeInput;
     private float axesMax = 32767f; // the max value for axes rotation and position (pedals and steering wheel);
 
-    public float accelerationResponse; // How fast the car starts to accelerate as you push the acceleration pedal (-1 to 1)
-    public float breakResponse;  // How fast the car starts to decelerate as you push the break pedal (-1 to 1)
+    [Range(0f, 1.0f)]
+    public float accelerationResponse = .8f; // How fast the car starts to accelerate as you push the acceleration pedal 
+    [Range(0f, 1.0f)]
+    public float brakeResponse = 1f;  // How fast the car starts to decelerate as you push the brake pedal 
+    [Range(0f, 1.0f)]
+    public float wheelResponse = .5f; // How responsive the wheel is
 
     public float topSpeed = 250f;//the top speed
-    public float maxTorque = 200f;//the maximum torque to apply to wheels
+    public float maxTorque = 400f;//the maximum torque to apply to wheels
     public float maxSteerAngle = 45f;
     public float currentSpeed;
     public float maxBrakeTorque = 2200;
@@ -44,10 +48,9 @@ public class AmbulanceController : MonoBehaviour
 
     void FixedUpdate() 
     {
-
         Forward = gasInput;
         Turn = wheelInput;
-        Brake = breakInput;
+        Brake = brakeInput;
 
         WheelColliderFL.steerAngle = maxSteerAngle * Turn;
         WheelColliderFR.steerAngle = maxSteerAngle * Turn;
@@ -59,7 +62,7 @@ public class AmbulanceController : MonoBehaviour
             LogitechGSDK.DIJOYSTATE2ENGINES rec;
             rec = LogitechGSDK.LogiGetStateUnity(0); // Stores info about the device's positional information for axes, POVs and buttons.
 
-            wheelInput = rec.lX / axesMax; // Normalize x-axis position value (-1 to 1) 
+            wheelInput = rec.lX / axesMax * wheelResponse; // Normalize x-axis position value (-1 to 1) 
 
             if (rec.lY > (accelerationResponse * axesMax))
             {
@@ -69,13 +72,13 @@ public class AmbulanceController : MonoBehaviour
             {
                 gasInput = rec.lY / -axesMax; // Normalize y-axis position value (-1 to 1) 
             }
-            if (rec.lRz > (breakResponse * axesMax))
+            if (rec.lRz > (brakeResponse * axesMax))
             {
-                breakInput = 0;
+                brakeInput = 0;
             }
-            else if (rec.lRz < (breakResponse * axesMax))
+            else if (rec.lRz < (brakeResponse * axesMax))
             {
-                breakInput = rec.lRz / -axesMax; // Normalize z-axis position value (-1 to 1) 
+                brakeInput = rec.lRz / -axesMax; // Normalize z-axis position value (-1 to 1) 
             }
         }
 
@@ -83,12 +86,15 @@ public class AmbulanceController : MonoBehaviour
         {
             WheelColliderBL.motorTorque = maxTorque * Forward;//run the wheels on back left and back right
             WheelColliderBR.motorTorque = maxTorque * Forward;
-        }//the top speed will not be accurate but will try to slow the car before top speed
-
-        else
-        {
-            Debug.Log("No steering wheel connected.");
+            Debug.Log("Currentspeed < topSpeed");
         }
+
+        /*if (currentSpeed >= topSpeed)
+        {
+            WheelColliderBL.motorTorque = maxTorque * Forward;//run the wheels on back left and back right
+            WheelColliderBR.motorTorque = maxTorque * Forward;
+            Debug.Log("Currentspeed < maxSpeed");
+        }*///the top speed will not be accurate but will try to slow the car before top speed
 
         WheelColliderBL.brakeTorque = maxBrakeTorque * Brake;
         WheelColliderBR.brakeTorque = maxBrakeTorque * Brake;
