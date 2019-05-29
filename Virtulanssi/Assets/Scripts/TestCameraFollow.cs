@@ -5,8 +5,9 @@ using UnityEngine;
 public class TestCameraFollow : MonoBehaviour
 {
     public GameObject target;
-    public float delay = 1;
-    Vector3 offset;
+    private float delay = 1;
+    private Vector3 offset;
+
 
     // Offsets the camera from player
     void Start()
@@ -20,9 +21,9 @@ public class TestCameraFollow : MonoBehaviour
         
         float targetAngle = target.transform.eulerAngles.y;
         float currentAngle = transform.eulerAngles.y;
-        float angle = Mathf.LerpAngle(currentAngle, targetAngle, Time.deltaTime * delay);
+        float delayedAngle = Mathf.LerpAngle(currentAngle, targetAngle, Time.deltaTime * delay);
 
-        Quaternion rotation = Quaternion.Euler(0, angle, 0);
+        Quaternion rotation = Quaternion.Euler(0, delayedAngle, 0);
         transform.position = target.transform.position - (rotation * offset);
 
         transform.LookAt(target.transform);
