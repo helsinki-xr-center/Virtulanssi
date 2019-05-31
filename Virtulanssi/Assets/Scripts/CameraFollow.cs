@@ -10,7 +10,7 @@ public class CameraFollow : MonoBehaviour
     // Updates the camera position and rotation according to the target
     void LateUpdate()
     {
-        transform.position = target.position + offset;
+        transform.position = target.position + (target.rotation * offset);
         transform.rotation = target.rotation;
     }
 }

@@ -14,7 +14,7 @@ public class AmbulanceController : MonoBehaviour
     public GameObject BL;
     public GameObject BR;
 
-    public float wheelInput;
+    public float steeringWheelInput;
     public float gasInput;
     public float brakeInput;
     private float axesMax = 32767f; // the max value for axes rotation and position (pedals and steering wheel);
@@ -32,37 +32,42 @@ public class AmbulanceController : MonoBehaviour
     public float currentSpeed;
     public float maxBrakeTorque = 2200;
 
-
-    private float Forward;//forward axis
-    private float Turn;//turn axis
-    private float Brake;//brake axis
+    private float reverse;
+    private float forward;//forward axis
+    private float turn;//turn axis
+    private float brake;//brake axis
 
     private Rigidbody rb;//rigid body of car
+
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        
+
     }
 
-    void FixedUpdate() 
+    void FixedUpdate()
     {
-        Forward = gasInput;
-        Turn = wheelInput;
-        Brake = brakeInput;
+        reverse = gasInput * -1;
+        forward = gasInput;
+        turn = steeringWheelInput;
+        brake = brakeInput;
 
-        WheelColliderFL.steerAngle = maxSteerAngle * Turn;
-        WheelColliderFR.steerAngle = maxSteerAngle * Turn;
+        WheelColliderFL.steerAngle = maxSteerAngle * turn;
+        WheelColliderFR.steerAngle = maxSteerAngle * turn;
 
         currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000; //formula for calculating speed in kmph
 
+        LogitechGSDK.DIJOYSTATE2ENGINES rec;
+        rec = LogitechGSDK.LogiGetStateUnity(0); // Stores info about the device's positional information for axes, POVs and buttons.
+
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0)) // Checks that the steering wheel is connected and that the applictaion's main window is active
         {
-            LogitechGSDK.DIJOYSTATE2ENGINES rec;
-            rec = LogitechGSDK.LogiGetStateUnity(0); // Stores info about the device's positional information for axes, POVs and buttons.
 
-            wheelInput = rec.lX / axesMax * wheelResponse; // Normalize x-axis position value (-1 to 1) 
+
+            steeringWheelInput = rec.lX / axesMax * wheelResponse; // Normalize x-axis position value (-1 to 1) 
+
 
             if (rec.lY > (accelerationResponse * axesMax))
             {
@@ -84,9 +89,19 @@ public class AmbulanceController : MonoBehaviour
 
         if (currentSpeed < topSpeed)
         {
-            WheelColliderBL.motorTorque = maxTorque * Forward;//run the wheels on back left and back right
-            WheelColliderBR.motorTorque = maxTorque * Forward;
-            Debug.Log("Currentspeed < topSpeed");
+            if (rec.rgbButtons[8] == 128 || rec.rgbButtons[10] == 128 || rec.rgbButtons[12] == 128)
+            {
+                WheelColliderBL.motorTorque = maxTorque * forward;//run the wheels on back left and back right
+                WheelColliderBR.motorTorque = maxTorque * forward;
+                //Debug.Log("Currentspeed < topSpeed");
+            }
+            if (rec.rgbButtons[9] == 128 || rec.rgbButtons[11] == 128 || rec.rgbButtons[13] == 128)
+            {
+                WheelColliderBL.motorTorque = maxTorque * forward * -1;//run the wheels on back left and back right
+                WheelColliderBR.motorTorque = maxTorque * forward * -1;
+                //Debug.Log("Currentspeed < topSpeed");
+            }
+
         }
 
         /*if (currentSpeed >= topSpeed)
@@ -96,10 +111,10 @@ public class AmbulanceController : MonoBehaviour
             Debug.Log("Currentspeed < maxSpeed");
         }*///the top speed will not be accurate but will try to slow the car before top speed
 
-        WheelColliderBL.brakeTorque = maxBrakeTorque * Brake;
-        WheelColliderBR.brakeTorque = maxBrakeTorque * Brake;
-        WheelColliderFL.brakeTorque = maxBrakeTorque * Brake;
-        WheelColliderFR.brakeTorque = maxBrakeTorque * Brake;
+        WheelColliderBL.brakeTorque = maxBrakeTorque * brake;
+        WheelColliderBR.brakeTorque = maxBrakeTorque * brake;
+        WheelColliderFL.brakeTorque = maxBrakeTorque * brake;
+        WheelColliderFR.brakeTorque = maxBrakeTorque * brake;
 
     }
     void Update()//update is called once per frame
