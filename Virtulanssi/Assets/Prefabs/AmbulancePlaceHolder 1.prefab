@@ -781,7 +781,7 @@ GameObject:
   - component: {fileID: 4897343826087983380}
   - component: {fileID: 4897343826087983379}
   - component: {fileID: 238969157486825472}
-  - component: {fileID: 573940859339965894}
+  - component: {fileID: 1651671000169887403}
   - component: {fileID: 7178114981810974103}
   m_Layer: 0
   m_Name: AmbulancePlaceHolder 1
@@ -875,12 +875,17 @@ MonoBehaviour:
   FR: {fileID: 9195141814437902332}
   BL: {fileID: 4030285906924973154}
   BR: {fileID: 8905292096969025731}
+  wheelInput: 0
+  gasInput: 0
+  breakInput: 0
+  accelerationResponse: 0
+  breakResponse: 0
   topSpeed: 250
   maxTorque: 200
   maxSteerAngle: 45
   currentSpeed: 0
   maxBrakeTorque: 2200
---- !u!114 &573940859339965894
+--- !u!114 &1651671000169887403
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -889,14 +894,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 4897343826087983377}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ccd6a24e009ea74a9cb7aaf22ebfa2e, type: 3}
+  m_Script: {fileID: 11500000, guid: 63ed5532ed2ada146817eb7fba838466, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wheelInput: 0
-  gasInput: 0
-  breakInput: 0
-  accelerationResponse: 0
-  breakResponse: 0
+  WheelColliderFL: {fileID: 7074866507751552087}
+  WheelColliderFR: {fileID: 5602803051409770003}
+  WheelColliderBL: {fileID: 8146676535268927253}
+  WheelColliderBR: {fileID: 4517534740329289573}
+  FL: {fileID: 265052560103226237}
+  FR: {fileID: 9195141814437902332}
+  BL: {fileID: 4030285906924973154}
+  BR: {fileID: 8905292096969025731}
+  topSpeed: 250
+  maxTorque: 200
+  maxSteerAngle: 45
+  currentSpeed: 0
+  maxBrakeTorque: 2200
 --- !u!54 &7178114981810974103
 Rigidbody:
   m_ObjectHideFlags: 0
