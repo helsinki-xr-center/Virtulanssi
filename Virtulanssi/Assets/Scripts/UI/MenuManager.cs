@@ -18,7 +18,7 @@ public class MenuManager : MonoBehaviour
         {
             Time.timeScale = 0f;
         }
-        if (!mainMenu.activeSelf)
+        else if (!mainMenu.activeSelf)
         {
             Time.timeScale = 1f;
         }

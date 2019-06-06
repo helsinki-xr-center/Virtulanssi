@@ -1173,6 +1173,7 @@ GameObject:
   - component: {fileID: 587030773}
   - component: {fileID: 587030775}
   - component: {fileID: 587030776}
+  - component: {fileID: 587030777}
   m_Layer: 0
   m_Name: MenuManager
   m_TagString: Untagged
@@ -1233,6 +1234,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vrMainMenu: {fileID: 706035599}
+--- !u!114 &587030777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587030772}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71463eeb77554954480a102bf3aad962, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &670798634
 GameObject:
   m_ObjectHideFlags: 0
@@ -2927,7 +2940,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 6760662449127956275}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3047a8618a80261439a21993d26653a8, type: 3}
   m_Name: 
@@ -3582,6 +3595,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: VR_EventSystem
       objectReference: {fileID: 0}
+    - target: {fileID: 2200929796149509042, guid: f936ed3970e50394ba8869618be5a0fc,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8168088973810154953, guid: f936ed3970e50394ba8869618be5a0fc,
         type: 3}
       propertyPath: m_Camera
@@ -3656,11 +3674,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2200929796149509042, guid: f936ed3970e50394ba8869618be5a0fc,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f936ed3970e50394ba8869618be5a0fc, type: 3}
@@ -4620,6 +4633,14 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 71663963, guid: d7d36848597053b4b8d9882449e567c9, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 71663962, guid: d7d36848597053b4b8d9882449e567c9, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 71663960, guid: d7d36848597053b4b8d9882449e567c9, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -4631,10 +4652,6 @@ PrefabInstance:
     - target: {fileID: 71663960, guid: d7d36848597053b4b8d9882449e567c9, type: 3}
       propertyPath: brakeResponse
       value: 0.495
-      objectReference: {fileID: 0}
-    - target: {fileID: 71663962, guid: d7d36848597053b4b8d9882449e567c9, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1517529823190856270, guid: d7d36848597053b4b8d9882449e567c9,
         type: 3}
@@ -4650,10 +4667,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 71663963, guid: d7d36848597053b4b8d9882449e567c9, type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7d36848597053b4b8d9882449e567c9, type: 3}

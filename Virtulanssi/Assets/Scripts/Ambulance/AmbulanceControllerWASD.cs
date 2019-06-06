@@ -21,9 +21,9 @@ public class AmbulanceControllerWASD : MonoBehaviour
     public float maxBrakeTorque = 2200;
 
 
-    private float Forward;//forward axis
-    private float Turn;//turn axis
-    private float Brake;//brake axis
+    private float forward;//forward axis
+    private float turn;//turn axis
+    private float brake;//brake axis
 
     private Rigidbody rb;//rigid body of car
 
@@ -35,25 +35,27 @@ public class AmbulanceControllerWASD : MonoBehaviour
 
     void FixedUpdate() //fixed update is more physics realistic
     {
-        Forward = Input.GetAxis("Vertical");
-        Turn = Input.GetAxis("Horizontal");
-        Brake = Input.GetAxis("Jump");
+        forward = Input.GetAxis("Vertical");
+        turn = Input.GetAxis("Horizontal");
+        brake = Input.GetAxis("Jump");
 
-        WheelColliderFL.steerAngle = maxSteerAngle * Turn;
-        WheelColliderFR.steerAngle = maxSteerAngle * Turn;
+        WheelColliderFL.steerAngle = maxSteerAngle * turn;
+        WheelColliderFR.steerAngle = maxSteerAngle * turn;
 
         currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000; //formula for calculating speed in kmph
 
         if (currentSpeed < topSpeed)
         {
-            WheelColliderBL.motorTorque = maxTorque * Forward;//run the wheels on back left and back right
-            WheelColliderBR.motorTorque = maxTorque * Forward;
+            WheelColliderBL.motorTorque = maxTorque * forward; //runs all four wheels
+            WheelColliderBR.motorTorque = maxTorque * forward;
+            WheelColliderFL.motorTorque = maxTorque * forward;
+            WheelColliderFR.motorTorque = maxTorque * forward;
         }//the top speed will not be accurate but will try to slow the car before top speed
 
-        WheelColliderBL.brakeTorque = maxBrakeTorque * Brake;
-        WheelColliderBR.brakeTorque = maxBrakeTorque * Brake;
-        WheelColliderFL.brakeTorque = maxBrakeTorque * Brake;
-        WheelColliderFR.brakeTorque = maxBrakeTorque * Brake;
+        WheelColliderBL.brakeTorque = maxBrakeTorque * brake;
+        WheelColliderBR.brakeTorque = maxBrakeTorque * brake;
+        WheelColliderFL.brakeTorque = maxBrakeTorque * brake;
+        WheelColliderFR.brakeTorque = maxBrakeTorque * brake;
 
     }
     void Update()//update is called once per frame
