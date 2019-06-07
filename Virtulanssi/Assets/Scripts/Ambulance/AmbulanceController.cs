@@ -4,40 +4,29 @@ using UnityEngine;
 
 public class AmbulanceController : MonoBehaviour
 {
-    public WheelCollider WheelColliderFL;//the wheel colliders
-    public WheelCollider WheelColliderFR;
-    public WheelCollider WheelColliderBL;
-    public WheelCollider WheelColliderBR;
+    public WheelCollider WheelColliderFL, WheelColliderFR, WheelColliderBL, WheelColliderBR;
 
-    public GameObject FL;//the wheel gameobjects
-    public GameObject FR;
-    public GameObject BL;
-    public GameObject BR;
+    public GameObject FL, FR, BL, BR;
 
-    public float steeringWheelInput;
-    public float gasInput;
-    public float brakeInput;
+    public float steeringWheelInput, gasInput, brakeInput;
     private float axesMax = 32767f; // the max value for axes rotation and position (pedals and steering wheel);
 
     [Range(0f, 1.0f)]
-    public float accelerationResponse = .8f; // How fast the car starts to accelerate as you push the acceleration pedal 
+    public float gasResponse = .8f; // How fast the car starts to accelerate as you push the acceleration pedal 
     [Range(0f, 1.0f)]
     public float brakeResponse = 1f;  // How fast the car starts to decelerate as you push the brake pedal 
     [Range(0f, 1.0f)]
     public float wheelResponse = .5f; // How responsive the wheel is
 
-    public float topSpeed = 200f;//the top speed
-    public float maxTorque = 400f;//the maximum torque to apply to wheels
+    public float topSpeed = 200f;
+    public float maxTorque = 400f;
     public float maxSteerAngle = 45f;
     public float currentSpeed;
     public float maxBrakeTorque = 2200;
 
-    private float reverse;
-    private float forward;//forward axis
-    private float turn;//turn axis
-    private float brake;//brake axis
+    //private float reverse, forward, turn, brake;
 
-    private Rigidbody rb;//rigid body of car
+    private Rigidbody rb;
 
     void Start()
     {
@@ -46,13 +35,8 @@ public class AmbulanceController : MonoBehaviour
 
     void FixedUpdate()
     {
-        reverse = gasInput * -1;
-        forward = gasInput;
-        turn = steeringWheelInput;
-        brake = brakeInput;
-
-        WheelColliderFL.steerAngle = maxSteerAngle * turn;
-        WheelColliderFR.steerAngle = maxSteerAngle * turn;
+        WheelColliderFL.steerAngle = maxSteerAngle * steeringWheelInput;
+        WheelColliderFR.steerAngle = maxSteerAngle * steeringWheelInput;
 
         currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000; //formula for calculating speed in kmph
 
@@ -63,21 +47,21 @@ public class AmbulanceController : MonoBehaviour
         {
             steeringWheelInput = rec.lX / axesMax * wheelResponse; // Normalize x-axis position value (-1 to 1) 
 
-            if (rec.lY > (accelerationResponse * axesMax))
+            if (rec.lY >= axesMax)
             {
                 gasInput = 0;
             }
-            else if (rec.lY < (accelerationResponse * axesMax))
+            else if (rec.lY < axesMax)
             {
-                gasInput = rec.lY / -axesMax; // Normalize y-axis position value (-1 to 1) 
+                gasInput = rec.lY / -axesMax * gasResponse; // Normalize y-axis position value (-1 to 1)
             }
-            if (rec.lRz > (brakeResponse * axesMax))
+            if (rec.lRz >= axesMax) // due to normalization not being quite accurate, axesmax-1 ensures that the breakInput gets zeroed
             {
                 brakeInput = 0;
             }
-            else if (rec.lRz < (brakeResponse * axesMax))
+            else if (rec.lRz < axesMax)
             {
-                brakeInput = rec.lRz / -axesMax; // Normalize z-axis position value (-1 to 1) 
+                brakeInput = rec.lRz / -axesMax * brakeResponse; // Normalize z-axis position value (-1 to 1) 
             }
         }
 
@@ -85,21 +69,23 @@ public class AmbulanceController : MonoBehaviour
         {
             if (rec.rgbButtons[8] == 128 || rec.rgbButtons[10] == 128 || rec.rgbButtons[12] == 128)
             {
-                WheelColliderBL.motorTorque = maxTorque * forward; //runs all four wheels
-                WheelColliderBR.motorTorque = maxTorque * forward;
-                WheelColliderFL.motorTorque = maxTorque * forward;
-                WheelColliderFR.motorTorque = maxTorque * forward;
+                WheelColliderBL.motorTorque = maxTorque * gasInput; //runs all four wheels
+                WheelColliderBR.motorTorque = maxTorque * gasInput;
+                WheelColliderFL.motorTorque = maxTorque * gasInput;
+                WheelColliderFR.motorTorque = maxTorque * gasInput;
             }
-            if (rec.rgbButtons[9] == 128 || rec.rgbButtons[11] == 128 || rec.rgbButtons[13] == 128)
+            else if (rec.rgbButtons[9] == 128 || rec.rgbButtons[11] == 128 || rec.rgbButtons[13] == 128)
             {
-                WheelColliderBL.motorTorque = maxTorque * forward * -1;//run the wheels on back left and back right
-                WheelColliderBR.motorTorque = maxTorque * forward * -1;
+                WheelColliderBL.motorTorque = maxTorque * gasInput * -1;//run the wheels on back left and back right
+                WheelColliderBR.motorTorque = maxTorque * gasInput * -1;
+                WheelColliderFL.motorTorque = maxTorque * gasInput * -1;
+                WheelColliderFR.motorTorque = maxTorque * gasInput * -1; 
             }
         }
-        WheelColliderBL.brakeTorque = maxBrakeTorque * brake;
-        WheelColliderBR.brakeTorque = maxBrakeTorque * brake;
-        WheelColliderFL.brakeTorque = maxBrakeTorque * brake;
-        WheelColliderFR.brakeTorque = maxBrakeTorque * brake;
+        WheelColliderBL.brakeTorque = maxBrakeTorque * brakeInput;
+        WheelColliderBR.brakeTorque = maxBrakeTorque * brakeInput;
+        WheelColliderFL.brakeTorque = maxBrakeTorque * brakeInput;
+        WheelColliderFR.brakeTorque = maxBrakeTorque * brakeInput;
     }
 
     void Update()//update is called once per frame

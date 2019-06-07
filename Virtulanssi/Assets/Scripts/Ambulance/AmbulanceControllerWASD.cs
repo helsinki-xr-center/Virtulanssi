@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class AmbulanceControllerWASD : MonoBehaviour
 {
-    public WheelCollider WheelColliderFL;//the wheel colliders
-    public WheelCollider WheelColliderFR;
-    public WheelCollider WheelColliderBL;
-    public WheelCollider WheelColliderBR;
+    public WheelCollider WheelColliderFL, WheelColliderFR, WheelColliderBL, WheelColliderBR;
 
-    public GameObject FL;//the wheel gameobjects
-    public GameObject FR;
-    public GameObject BL;
-    public GameObject BR;
+    public GameObject FL, FR, BL, BR;
 
     public float topSpeed = 250f;//the top speed
     public float maxTorque = 200f;//the maximum torque to apply to wheels
@@ -21,9 +15,7 @@ public class AmbulanceControllerWASD : MonoBehaviour
     public float maxBrakeTorque = 2200;
 
 
-    private float forward;//forward axis
-    private float turn;//turn axis
-    private float brake;//brake axis
+    private float forward, turn, brake;
 
     private Rigidbody rb;//rigid body of car
 
@@ -33,7 +25,7 @@ public class AmbulanceControllerWASD : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    void FixedUpdate() //fixed update is more physics realistic
+    void FixedUpdate() 
     {
         forward = Input.GetAxis("Vertical");
         turn = Input.GetAxis("Horizontal");
@@ -58,7 +50,7 @@ public class AmbulanceControllerWASD : MonoBehaviour
         WheelColliderFR.brakeTorque = maxBrakeTorque * brake;
 
     }
-    void Update()//update is called once per frame
+    void Update()
     {
         Quaternion flq;//rotation of wheel collider
         Vector3 flv;//position of wheel collider
