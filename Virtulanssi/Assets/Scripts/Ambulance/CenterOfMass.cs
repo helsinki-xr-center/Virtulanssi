@@ -17,7 +17,7 @@ public class CenterOfMass : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        //Gizmos.DrawSphere(transform.position + transform.rotation * com, 1f);
-        Gizmos.DrawSphere(transform.position + transform.rotation * rb.centerOfMass, 1f);
+        Gizmos.DrawSphere(transform.position + transform.rotation * com, 1f);
+        //Gizmos.DrawSphere(transform.position + transform.rotation * rb.centerOfMass, 1f);
     }
 }

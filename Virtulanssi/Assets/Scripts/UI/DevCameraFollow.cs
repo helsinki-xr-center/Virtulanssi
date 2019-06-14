@@ -36,7 +36,7 @@ public class DevCameraFollow : MonoBehaviour
         {
             mouseX += Input.GetAxis("Mouse X") *2;
             mouseY -= Input.GetAxis("Mouse Y") *2;
-            Debug.Log("Pressing mouse button");
+            //Debug.Log("Pressing mouse button");
         }
 
 

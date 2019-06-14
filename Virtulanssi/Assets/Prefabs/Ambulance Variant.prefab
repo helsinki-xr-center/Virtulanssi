@@ -390,10 +390,10 @@ MonoBehaviour:
   FR: {fileID: 6825960724274038120}
   BL: {fileID: 8826967354570989162}
   BR: {fileID: 5785743529255306208}
-  wheelInput: 0
+  steeringWheelInput: 0
   gasInput: 0
   brakeInput: 0
-  accelerationResponse: 0.8
+  gasResponse: 0.8
   brakeResponse: 1
   wheelResponse: 0.5
   topSpeed: 250
@@ -408,7 +408,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3383153004801172624}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63ed5532ed2ada146817eb7fba838466, type: 3}
   m_Name: 
@@ -426,7 +426,7 @@ MonoBehaviour:
   maxSteerAngle: 45
   currentSpeed: 0
   maxBrakeTorque: 2200
---- !u!114 &71663963
+--- !u!114 &8040822313579764331
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -520,20 +520,20 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: -8977893210094814991, guid: 89f6a9ffb4c52c34481024ea6a704fc6,
+    - target: {fileID: -2259771796616880645, guid: 89f6a9ffb4c52c34481024ea6a704fc6,
         type: 3}
       propertyPath: m_Name
-      value: FR
+      value: FL
       objectReference: {fileID: 0}
     - target: {fileID: -8243375432440709511, guid: 89f6a9ffb4c52c34481024ea6a704fc6,
         type: 3}
       propertyPath: m_Name
       value: BR
       objectReference: {fileID: 0}
-    - target: {fileID: -2259771796616880645, guid: 89f6a9ffb4c52c34481024ea6a704fc6,
+    - target: {fileID: -8977893210094814991, guid: 89f6a9ffb4c52c34481024ea6a704fc6,
         type: 3}
       propertyPath: m_Name
-      value: FL
+      value: FR
       objectReference: {fileID: 0}
     - target: {fileID: 2858944256559227891, guid: 89f6a9ffb4c52c34481024ea6a704fc6,
         type: 3}

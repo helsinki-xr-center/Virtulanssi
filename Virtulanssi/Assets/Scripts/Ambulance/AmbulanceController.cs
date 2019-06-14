@@ -38,7 +38,7 @@ public class AmbulanceController : MonoBehaviour
         WheelColliderFL.steerAngle = maxSteerAngle * steeringWheelInput;
         WheelColliderFR.steerAngle = maxSteerAngle * steeringWheelInput;
 
-        currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000; //formula for calculating speed in kmph
+        currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000 * transform.localScale.x; //formula for calculating speed in kmph
 
         LogitechGSDK.DIJOYSTATE2ENGINES rec;
         rec = LogitechGSDK.LogiGetStateUnity(0); // Stores info about the device's positional information for axes, POVs and buttons.

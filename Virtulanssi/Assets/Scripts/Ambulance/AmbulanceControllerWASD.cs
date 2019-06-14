@@ -14,18 +14,16 @@ public class AmbulanceControllerWASD : MonoBehaviour
     public float currentSpeed;
     public float maxBrakeTorque = 2200;
 
-
     private float forward, turn, brake;
 
     private Rigidbody rb;//rigid body of car
-
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    void FixedUpdate() 
+    void FixedUpdate()
     {
         forward = Input.GetAxis("Vertical");
         turn = Input.GetAxis("Horizontal");
@@ -34,7 +32,7 @@ public class AmbulanceControllerWASD : MonoBehaviour
         WheelColliderFL.steerAngle = maxSteerAngle * turn;
         WheelColliderFR.steerAngle = maxSteerAngle * turn;
 
-        currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000; //formula for calculating speed in kmph
+        currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000 * transform.localScale.x; //formula for calculating speed in kmph
 
         if (currentSpeed < topSpeed)
         {
@@ -48,8 +46,8 @@ public class AmbulanceControllerWASD : MonoBehaviour
         WheelColliderBR.brakeTorque = maxBrakeTorque * brake;
         WheelColliderFL.brakeTorque = maxBrakeTorque * brake;
         WheelColliderFR.brakeTorque = maxBrakeTorque * brake;
-
     }
+
     void Update()
     {
         Quaternion flq;//rotation of wheel collider
@@ -75,7 +73,6 @@ public class AmbulanceControllerWASD : MonoBehaviour
         WheelColliderBR.GetWorldPose(out BRv, out BRq);//get wheel collider position and rotation
         BR.transform.position = BRv;
         BR.transform.rotation = BRq;
-
     }
 
 }
