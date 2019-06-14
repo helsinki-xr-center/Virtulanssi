@@ -10,8 +10,8 @@ public class CenterOfMass : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //rb.centerOfMass = com;
-        rb.ResetCenterOfMass();
+        rb.centerOfMass = com;
+        //rb.ResetCenterOfMass();
     }
 
     private void OnDrawGizmos()

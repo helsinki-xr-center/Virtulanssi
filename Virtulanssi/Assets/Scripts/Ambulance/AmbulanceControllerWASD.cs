@@ -33,6 +33,7 @@ public class AmbulanceControllerWASD : MonoBehaviour
         WheelColliderFR.steerAngle = maxSteerAngle * turn;
 
         currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000 * transform.localScale.x; //formula for calculating speed in kmph
+        Debug.Log(WheelColliderBL.rpm);
 
         if (currentSpeed < topSpeed)
         {
