@@ -104,9 +104,9 @@ GameObject:
   - component: {fileID: 2913968398470051380}
   - component: {fileID: 2913968398470051381}
   - component: {fileID: 2913968398470051383}
-  - component: {fileID: 5181043492078759174}
   - component: {fileID: 8476562281922876448}
   - component: {fileID: 8476562281922876449}
+  - component: {fileID: 2417084577249670481}
   m_Layer: 0
   m_Name: Ambulance
   m_TagString: Untagged
@@ -220,18 +220,6 @@ MonoBehaviour:
   currentSpeed: 0
   maxBrakeTorque: 2200
   speedometer: {fileID: 8476562282826203701}
---- !u!114 &5181043492078759174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 469255527041913853}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3047a8618a80261439a21993d26653a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8476562281922876448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,6 +249,18 @@ MonoBehaviour:
   WheelL: {fileID: 2913968397298672304}
   WheelR: {fileID: 2913968398834027008}
   AntiRoll: 50000
+--- !u!114 &2417084577249670481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 469255527041913853}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3047a8618a80261439a21993d26653a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1513598676629706511
 GameObject:
   m_ObjectHideFlags: 0
@@ -1331,6 +1331,17 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 8476562283446523857}
         m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8476562282511995965}
+        m_MethodName: set_enabled
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

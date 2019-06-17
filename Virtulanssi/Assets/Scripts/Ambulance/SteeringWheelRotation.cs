@@ -6,6 +6,7 @@ public class SteeringWheelRotation : MonoBehaviour
 {
     private float normalize = 364.09f; // 32767 divided by 90
     private float steeringWheelInput;
+
     void Update()
     {
         LogitechGSDK.DIJOYSTATE2ENGINES rec;
