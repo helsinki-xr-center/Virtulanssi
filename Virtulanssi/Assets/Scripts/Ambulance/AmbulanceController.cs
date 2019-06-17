@@ -24,9 +24,9 @@ public class AmbulanceController : MonoBehaviour
     public float currentSpeed;
     public float maxBrakeTorque = 2200;
 
-    //private float reverse, forward, turn, brake;
-
     private Rigidbody rb;
+
+    public Speedometer speedometer;
 
     void Start()
     {
@@ -37,8 +37,6 @@ public class AmbulanceController : MonoBehaviour
     {
         WheelColliderFL.steerAngle = maxSteerAngle * steeringWheelInput;
         WheelColliderFR.steerAngle = maxSteerAngle * steeringWheelInput;
-
-        currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000 * transform.localScale.x; //formula for calculating speed in kmph
 
         LogitechGSDK.DIJOYSTATE2ENGINES rec;
         rec = LogitechGSDK.LogiGetStateUnity(0); // Stores info about the device's positional information for axes, POVs and buttons.
@@ -53,7 +51,7 @@ public class AmbulanceController : MonoBehaviour
             }
             else if (rec.lY < axesMax)
             {
-                gasInput = rec.lY / -axesMax * gasResponse; // Normalize y-axis position value (-1 to 1)
+                gasInput = (rec.lY - axesMax) / (-axesMax * 2) * gasResponse; // Normalize y-axis position value (0 to 1)
             }
             if (rec.lRz >= axesMax) // due to normalization not being quite accurate, axesmax-1 ensures that the breakInput gets zeroed
             {
@@ -73,13 +71,14 @@ public class AmbulanceController : MonoBehaviour
                 WheelColliderBR.motorTorque = maxTorque * gasInput;
                 WheelColliderFL.motorTorque = maxTorque * gasInput;
                 WheelColliderFR.motorTorque = maxTorque * gasInput;
+
             }
             else if (rec.rgbButtons[9] == 128 || rec.rgbButtons[11] == 128 || rec.rgbButtons[13] == 128)
             {
                 WheelColliderBL.motorTorque = maxTorque * gasInput * -1;//run the wheels on back left and back right
                 WheelColliderBR.motorTorque = maxTorque * gasInput * -1;
                 WheelColliderFL.motorTorque = maxTorque * gasInput * -1;
-                WheelColliderFR.motorTorque = maxTorque * gasInput * -1; 
+                WheelColliderFR.motorTorque = maxTorque * gasInput * -1;
             }
         }
         WheelColliderBL.brakeTorque = maxBrakeTorque * brakeInput;
@@ -90,6 +89,9 @@ public class AmbulanceController : MonoBehaviour
 
     void Update()//update is called once per frame
     {
+
+        currentSpeed = (transform.InverseTransformVector(rb.velocity).z) * (transform.localScale.x);
+        speedometer.ChangeText(currentSpeed);
         Quaternion flq;//rotation of wheel collider
         Vector3 flv;//position of wheel collider
         WheelColliderFL.GetWorldPose(out flv, out flq);//get wheel collider position and rotation

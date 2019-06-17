@@ -18,6 +18,8 @@ public class AmbulanceControllerWASD : MonoBehaviour
 
     private Rigidbody rb;//rigid body of car
 
+    public Speedometer speedometer;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -32,8 +34,7 @@ public class AmbulanceControllerWASD : MonoBehaviour
         WheelColliderFL.steerAngle = maxSteerAngle * turn;
         WheelColliderFR.steerAngle = maxSteerAngle * turn;
 
-        currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000 * transform.localScale.x; //formula for calculating speed in kmph
-        Debug.Log(WheelColliderBL.rpm);
+
 
         if (currentSpeed < topSpeed)
         {
@@ -43,6 +44,12 @@ public class AmbulanceControllerWASD : MonoBehaviour
             WheelColliderFR.motorTorque = maxTorque * forward;
         }//the top speed will not be accurate but will try to slow the car before top speed
 
+        Brake();
+
+    }
+
+    public void Brake()
+    {
         WheelColliderBL.brakeTorque = maxBrakeTorque * brake;
         WheelColliderBR.brakeTorque = maxBrakeTorque * brake;
         WheelColliderFL.brakeTorque = maxBrakeTorque * brake;
@@ -51,6 +58,12 @@ public class AmbulanceControllerWASD : MonoBehaviour
 
     void Update()
     {
+        //currentSpeed = rb.velocity.magnitude;
+        currentSpeed = (transform.InverseTransformVector(rb.velocity).z) * (transform.localScale.x);
+        //currentSpeed = 2 * 22 / 7 * WheelColliderBL.radius * WheelColliderBL.rpm * 60 / 1000 * transform.localScale.x; //formula for calculating speed in kmph
+
+        speedometer.ChangeText(currentSpeed);
+
         Quaternion flq;//rotation of wheel collider
         Vector3 flv;//position of wheel collider
         WheelColliderFL.GetWorldPose(out flv, out flq);//get wheel collider position and rotation
