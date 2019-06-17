@@ -13,7 +13,7 @@ public class ParallelBezierSplinesInspector : Editor
     private const float directionScale = 0.5f;
     private const float handleSize = 0.04f;
     private const float pickSize = 0.06f;
-    private const float laneChangeDistance = 2.5f;
+    private const float laneChangeDistance = 3.5f;
     [Range(0, 200)]
     public int wayPoints = 0;
     private int selectedIndex = -1;
@@ -65,6 +65,7 @@ public class ParallelBezierSplinesInspector : Editor
 
     //All nodes in scene are gathered here for drawing purposes
     Nodes[] allNodes;
+    private bool showNodeLabels = false;
     
 
     public override void OnInspectorGUI()
@@ -229,6 +230,14 @@ public class ParallelBezierSplinesInspector : Editor
         EditorGUILayout.Separator();
         EditorGUILayout.LabelField("Overall speed limit", EditorStyles.boldLabel);
         parallel.SpeedLimit = (SpeedLimits)EditorGUILayout.EnumPopup("Limit", parallel.SpeedLimit);
+        EditorGUILayout.Separator();
+        bool showLabels = showNodeLabels;
+        showLabels = EditorGUILayout.ToggleLeft("Show node labels", showLabels);
+        if (showLabels != showNodeLabels)
+        {
+            showNodeLabels = showLabels;
+            SceneView.RepaintAll();
+        }
         EditorGUILayout.Separator();
         DrawEditorLine();
     }
@@ -1566,7 +1575,7 @@ public class ParallelBezierSplinesInspector : Editor
             }
         }
         float length = EditorGUILayout.Slider(new GUIContent("Length", "Length of (the first) spline"),
-        defaultLength, 1f, 100f);
+        defaultLength, 1f, 500f);
         if (length != defaultLength)
         {
             defaultLength = length;
@@ -1642,7 +1651,10 @@ public class ParallelBezierSplinesInspector : Editor
         }
         else
         {
-            
+            if (showNodeLabels)
+            {
+                DrawNodeLabels();
+            }
             DrawParallelBezier();
             DrawSegmentLines();
             if (parallel.LanesSet && previewNodes)
@@ -2205,13 +2217,14 @@ public class ParallelBezierSplinesInspector : Editor
         return point;
     }
 
-    private void DrawBasicSettingsObjects()
+    private void DrawNodeLabels()
     {
         if (allNodes == null)
         {
             allNodes = GameObject.FindObjectsOfType<Nodes>();
         }
-        if (linkedToNode == false && laneCountSet)
+        Handles.color = Color.black;
+        if ((linkedToNode == false && laneCountSet) || showNodeLabels)
         {
             foreach (Nodes n in allNodes)
             {
@@ -2219,6 +2232,10 @@ public class ParallelBezierSplinesInspector : Editor
             }
             SceneView.RepaintAll();
         }
+    }
+
+    private void DrawBasicSettingsObjects()
+    {
         if (!directionSet)
         {
             SetStartDirection();
