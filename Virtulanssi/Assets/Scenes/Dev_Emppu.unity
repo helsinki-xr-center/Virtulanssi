@@ -7807,5 +7807,50 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8476562281922876449, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: AntiRoll
+      value: 110000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968398447339915, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968398447339915, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968397248063617, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968397248063617, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968397298672304, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968397298672304, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968398834027008, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2913968398834027008, guid: 2591f855428520540ae159b726e4e519,
+        type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2591f855428520540ae159b726e4e519, type: 3}
