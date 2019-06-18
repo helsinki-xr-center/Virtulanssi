@@ -5,36 +5,56 @@ using UnityEngine.UI;
 
 public class CPUCarDrive : MonoBehaviour
 {
-    public float targetSpeed;
 
-    public enum DriveState
+    public enum SteeringStatus
     {
-        IsStopped,
-        AccelerateToTargetSpeed,
-        KeepTargetSpeed,
-        DecelerateToTargetSpeed,
-        DecelerateToStop,
-        EmergencyStop
+        UnderSteering,
+        OnTrack,
+        OverSteering
+    }
+
+    public enum BrakingStatus
+    {
+        NoBraking,
+        NoGass,
+        LightBraking,
+        SteadyBraking,
+        HardBraking
     };
 
+    public SteeringStatus steeringStatus = SteeringStatus.OnTrack;
+    public BrakingStatus brakingStatus = BrakingStatus.NoBraking;
 
-    DriveState driveState = DriveState.IsStopped;
     public Vector3 target;
-    public Vector3 midpoint;
     public Nodes previousNode;
     public Nodes nextTargetNode;
 
     public List<AxleInfo> axleInfos;
     public float maxMotorTorque;
     public float maxSteeringAngle;
-    public Vector3 lastPost;
-    public float lastTime = 0.1f;
+
+    public Vector3 previousPosition;
+    public float previousTime = -0.000001f;
+    public float previousSpeed = 0f;
+
     public Text speedText;
+
     public float motor = 0f;
     public float steering = 0f;
     public float centerOfMassHeight = 0f;
+
     private const float checkDistance = 3f;
+    private const float breakForce = -2.5f;
+
     bool randomNext = true;
+
+    public float previousAngleToTarget = 0f;
+    public float previousSteeringAngle = 0f;
+    public float previousBrakeForce = 0f;
+    public float angleTolerance = 2f;
+    public int previousLeftRightStatus;
+    public bool autoDrive = true;
+
 
 
     private void Awake()
@@ -48,33 +68,15 @@ public class CPUCarDrive : MonoBehaviour
     private void Start()
     {
         InitDirection();
+        previousTime = Time.time;
+        previousPosition = transform.position;
     }
 
-    void Update()
-    {
-        switch(driveState)
-        {
-            case DriveState.IsStopped:
-                break;
-            case DriveState.AccelerateToTargetSpeed:
-                break;
-            case DriveState.KeepTargetSpeed:
-                break;
-            case DriveState.DecelerateToTargetSpeed:
-                break;
-            case DriveState.DecelerateToStop:
-                break;
-            case DriveState.EmergencyStop:
-                break;
-        }
-    }
 
     private void InitDirection()
     {
         float dist = 0f;
         Nodes n = previousNode;
-        bool midFound = false;
-        Nodes mid = null;
         if (randomNext)
         {
             while (dist < checkDistance)
@@ -86,24 +88,10 @@ public class CPUCarDrive : MonoBehaviour
                     nextTargetNode = previousNode.OutNodes[i];
                     break;
                 }
-                if (!midFound)
-                {
-                    mid = previousNode.OutNodes[i];
-                    if (dist >= checkDistance * 0.5f)
-                    {
-                        midFound = true;
-                    }
-                }
             }
             target = nextTargetNode.transform.position;
-            if (mid == null)
-            {
-                midpoint = previousNode.transform.position + (target - previousNode.transform.position) * 0.5f;
-            }
-            else
-            {
-                midpoint = mid.transform.position;
-            }
+            previousAngleToTarget = AngleToTarget;
+            previousLeftRightStatus = LeftRightCheck;
         }
     }
 
@@ -121,34 +109,288 @@ public class CPUCarDrive : MonoBehaviour
         }
     }
 
-    private void UpdateTargetDirection()
+
+    private void AutoDrive()
     {
+ 
+        //Update node
+        bool targetChanged = false;
+        if (Vector3.Dot(transform.forward, target - transform.position) < 0)
+        {
+            Debug.Log("changed");
+            targetChanged = true;
+        }
+        if (targetChanged)
+        {
+            Nodes n = nextTargetNode;
+            previousNode = n;
+            int counter = 0;
+            while(true)
+            {
+                int i = NextRandomNode(n);
+                n = nextTargetNode.OutNodes[i];
+                if (Vector3.Distance(transform.position, n.transform.position) >= 3f)//Vector3.Dot(transform.forward, n.transform.position - transform.position) > 0f)
+                {
+                    nextTargetNode = n;
+                    target = new Vector3(nextTargetNode.transform.position.x, 0f, nextTargetNode.transform.position.z);
+                    previousAngleToTarget = AngleToTarget;
+                    break;
+                }
+                counter++;
+                if (counter > 50)
+                {
+                    Debug.Log("failed");
+                    break;
+                }
+            }
+        }
+
+        //Steering status
+        float angleToTarget = AngleToTarget;
+        int leftRight = LeftRightCheck;
+        float angleDifference = Mathf.Abs(previousAngleToTarget - angleToTarget);
+        // Not steered over
+        if (leftRight == previousLeftRightStatus)
+        {
+            if (leftRight == 0)
+            {
+                steeringStatus = SteeringStatus.OnTrack;
+            }
+            else
+            {
+                if (angleDifference > 5f)
+                {
+                    steeringStatus = SteeringStatus.UnderSteering;
+                }
+                else
+                {
+                    steeringStatus = SteeringStatus.OnTrack;
+                }
+            }
+        }
+        else
+        {
+            if (angleDifference > 5f)
+            {
+                steeringStatus = SteeringStatus.OverSteering;
+            }
+            else
+            {
+                steeringStatus = SteeringStatus.OnTrack;
+            }
+        }
+        previousLeftRightStatus = leftRight; ;
+
+        // steering correction
+        bool tooMuchSpeed = false;
+        if (steeringStatus == SteeringStatus.OnTrack)
+        {
+            steering = 0f;
+            previousSteeringAngle = 0f;
+        }
+        else if (steeringStatus == SteeringStatus.UnderSteering)
+        {
+            if (angleToTarget > angleTolerance)
+            {
+                if (Mathf.Abs(previousSteeringAngle) == maxSteeringAngle)
+                {
+                    tooMuchSpeed = true;
+                    //Debug.Log("Too much speed");
+                }
+                else
+                {
+                    if (leftRight < 0)
+                    {
+                        previousSteeringAngle = Mathf.Clamp(previousSteeringAngle - 1f, -maxSteeringAngle, maxSteeringAngle);
+                    }
+                    else
+                    {
+                        previousSteeringAngle = Mathf.Clamp(previousSteeringAngle + 1f, -maxSteeringAngle, maxSteeringAngle);
+                    }
+                }
+            }
+        } // oversteering
+        else
+        {
+            if (angleDifference > 5f)
+            {
+                if (leftRight < 0)
+                {
+                    previousSteeringAngle = Mathf.Clamp(previousSteeringAngle + 1f, -maxSteeringAngle, maxSteeringAngle);
+                }
+                else
+                {
+                    previousSteeringAngle = Mathf.Clamp(previousSteeringAngle - 1f, -maxSteeringAngle, maxSteeringAngle);
+                }
+            }
+        }
+
+        // Speed status
+        float targetSpeed = KmsToMs.Convert(previousNode.SpeedLimit);
+        Vector3 newPos = new Vector3(transform.position.x, 0f, transform.position.z);
+        float distanceTarveled = Vector3.Distance(newPos, previousPosition);
+        Debug.Log(distanceTarveled);
+        float t = Time.time;
+        float currentSpeed = distanceTarveled / (t - previousTime);
+        previousTime = t;
+        previousSpeed = currentSpeed;
+
+        // update braking status
+        if (currentSpeed < targetSpeed && !tooMuchSpeed)
+        {
+            switch (brakingStatus)
+            {
+                case BrakingStatus.NoBraking:
+                    motor = Mathf.Clamp(motor + 10f, 0f, maxMotorTorque);
+                    break;
+                case BrakingStatus.NoGass:
+                    brakingStatus = BrakingStatus.NoBraking;
+                    break;
+                case BrakingStatus.LightBraking:
+                    brakingStatus = BrakingStatus.NoGass;
+                    break;
+                case BrakingStatus.SteadyBraking:
+                    brakingStatus = BrakingStatus.LightBraking;
+                    break;
+                case BrakingStatus.HardBraking:
+                    brakingStatus = BrakingStatus.SteadyBraking;
+                    break;
+            }
+        }
+        else if (currentSpeed > targetSpeed || tooMuchSpeed)
+        {
+            //Debug.Log("high speed, current: " + currentSpeed + ", target: " + targetSpeed);
+            switch (brakingStatus)
+            {
+                case BrakingStatus.NoBraking:
+                    if (motor == 0)
+                    {
+                        brakingStatus = BrakingStatus.NoGass;
+                    }
+                    else
+                    {
+                        motor = Mathf.Clamp(motor - 10f, 0f, maxMotorTorque);
+                    }
+                    break;
+                case BrakingStatus.NoGass:
+                    brakingStatus = BrakingStatus.LightBraking;
+                    break;
+                case BrakingStatus.LightBraking:
+                    brakingStatus = BrakingStatus.SteadyBraking;
+                    break;
+                case BrakingStatus.SteadyBraking:
+                    brakingStatus = BrakingStatus.HardBraking;
+                    previousBrakeForce = 2400f;
+                    break;
+                case BrakingStatus.HardBraking:
+                    previousBrakeForce += 10f;
+                    break;
+            }
+            if (currentSpeed < 36)
+            {
+                motor = 100f;
+                brakingStatus = BrakingStatus.NoBraking;
+            }
+        }
+
+        switch(brakingStatus)
+        {
+            case BrakingStatus.NoBraking:
+                previousBrakeForce = 0f;
+                break;
+            case BrakingStatus.NoGass:
+                previousBrakeForce = 0f;
+                break;
+            case BrakingStatus.LightBraking:
+                previousBrakeForce = 300f;
+                break;
+            case BrakingStatus.SteadyBraking:
+                previousBrakeForce = 600f;
+                break;
+            case BrakingStatus.HardBraking:
+                break;
+        }
+        foreach (AxleInfo a in axleInfos)
+        {
+            a.leftWheel.brakeTorque = previousBrakeForce;
+            a.rightWheel.brakeTorque = previousBrakeForce;
+            if (a.steering)
+            {
+                a.leftWheel.steerAngle = previousSteeringAngle;
+                a.rightWheel.steerAngle = previousSteeringAngle;
+            }
+            if (a.motor)
+            {
+                a.leftWheel.motorTorque = motor;
+                a.rightWheel.motorTorque = motor;
+            }
+        }
+        ShowSpeedInUI(distanceTarveled);
+        previousPosition = newPos;
 
     }
 
-    private void AccelerateToTargetSpeed()
+    private void ManualDrive()
     {
+        motor = maxMotorTorque * Input.GetAxis("Vertical");
+        steering = maxSteeringAngle * Input.GetAxis("Horizontal");
 
-    }
+        // light braking
+        if (Input.GetKey(KeyCode.Space))
+        {
+            foreach (AxleInfo a in axleInfos)
+            {
+                a.leftWheel.brakeTorque = 300f;
+                a.rightWheel.brakeTorque = 300f;
+            }
+        }
+        // steady braking
+        else if (Input.GetKey(KeyCode.Z))
+        {
+            foreach (AxleInfo a in axleInfos)
+            {
+                a.leftWheel.brakeTorque = 600f;
+                a.rightWheel.brakeTorque = 600f;
+            }
+        }
+        // heavy braking
+        else if (Input.GetKey(KeyCode.X))
+        {
+            foreach (AxleInfo a in axleInfos)
+            {
+                a.leftWheel.brakeTorque = 2400f;
+                a.rightWheel.brakeTorque = 2400f;
+            }
+        }
+        else
+        {
+            foreach (AxleInfo a in axleInfos)
+            {
+                a.leftWheel.brakeTorque = 0f;
+                a.rightWheel.brakeTorque = 0f;
+            }
+        }
 
-    private void KeepTargetSpeed()
-    {
+        foreach (AxleInfo a in axleInfos)
+        {
+            if (a.steering)
+            {
+                a.leftWheel.steerAngle = steering;
+                a.rightWheel.steerAngle = steering;
+            }
+            if (a.motor)
+            {
+                a.leftWheel.motorTorque = motor;
+                a.rightWheel.motorTorque = motor;
+            }
+            ApplyLocalPositionsToVisuals(a.leftWheel);
+            ApplyLocalPositionsToVisuals(a.rightWheel);
+        }
 
-    }
-
-    private void DecelerateToTargetSpeed()
-    {
-
-    }
-
-    private void DecelerateToStop()
-    {
-
-    }
-
-    private void DoEmergencyStop()
-    {
-
+        Vector3 newPos = new Vector3(transform.position.x, 0f, transform.position.z);
+        float dist = Vector3.Distance(newPos, previousPosition);
+        ShowSpeedInUI(dist);
+        previousPosition = newPos;
     }
 
     private void ApplyLocalPositionsToVisuals(WheelCollider c)
@@ -167,36 +409,60 @@ public class CPUCarDrive : MonoBehaviour
         if (speedText != null)
         {
             float t = Time.time;
-            float inKmS = distInMeters * 3.6f / (t - lastTime);
-            lastTime = t;
+            float inKmS = distInMeters * 3.6f / (t - previousTime);
+            previousTime = t;
             speedText.text = "Speed (km / h) : " + inKmS;
         }
     }
 
+    private float AngleToTarget
+    {
+        get
+        {
+            if (target == null)
+            {
+                return 0f;
+            }
+            return Vector3.Angle(transform.forward, (target - transform.position).normalized);
+        }
+    }
+
+    private int LeftRightCheck
+    {
+        get
+        {
+            if (target == null)
+            {
+                return 0;
+            }
+            Vector3 cross = Vector3.Cross(transform.forward, (target - transform.position));
+            float dir = Vector3.Dot(cross, transform.up);
+            if (dir > 0f)
+            {
+                return 1;
+            }
+            else if (dir < 0f)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+    }
+
     private void FixedUpdate()
     {
-        motor = maxMotorTorque * Input.GetAxis("Vertical");
-        steering = maxSteeringAngle * Input.GetAxis("Horizontal");
-
-        foreach (AxleInfo a in axleInfos)
+        if (autoDrive)
         {
-            if (a.steering)
-            {
-                a.leftWheel.steerAngle = steering;
-                a.rightWheel.steerAngle = steering;
-            }
-            if (a.motor)
-            {
-                a.leftWheel.motorTorque = motor;
-                a.rightWheel.motorTorque = motor;
-            }
-            ApplyLocalPositionsToVisuals(a.leftWheel);
-            ApplyLocalPositionsToVisuals(a.rightWheel);
+            AutoDrive();
         }
-        Vector3 newPos = new Vector3(transform.position.x, 0f, transform.position.z);
-        float dist = Vector3.Distance(newPos, lastPost);
-        ShowSpeedInUI(dist);
-        lastPost = newPos;
+        else
+        {
+            ManualDrive();
+        }
     }
 }
 

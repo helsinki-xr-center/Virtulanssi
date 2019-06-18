@@ -61898,7 +61898,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57aaec15994d1ff4eac5618d2de006a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSpeed: 0
+  steeringStatus: 1
+  brakingStatus: 0
+  target: {x: 0, y: 0, z: 0}
+  previousNode: {fileID: 0}
+  nextTargetNode: {fileID: 0}
   axleInfos:
   - leftWheel: {fileID: 1826847123}
     rightWheel: {fileID: 1966411984}
@@ -61910,8 +61914,19 @@ MonoBehaviour:
     steering: 0
   maxMotorTorque: 600
   maxSteeringAngle: 35
+  previousPosition: {x: 0, y: 0, z: 0}
+  previousTime: -0.000001
+  previousSpeed: 0
   speedText: {fileID: 826856590}
+  motor: 0
+  steering: 0
   centerOfMassHeight: 0
+  previousAngleToTarget: 0
+  previousSteeringAngle: 0
+  previousBrakeForce: 0
+  angleTolerance: 2
+  previousLeftRightStatus: 0
+  autoDrive: 1
 --- !u!54 &1978515327
 Rigidbody:
   m_ObjectHideFlags: 0

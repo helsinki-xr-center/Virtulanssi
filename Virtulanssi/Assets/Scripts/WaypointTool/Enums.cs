@@ -54,6 +54,16 @@ public enum SpeedLimits
     KMH_120
 }
 
+public static class KmsToMs
+{
+    static float[] kmsToMs = { 72f, 108f, 144f, 180f, 216f, 252f, 288f, 324f, 360f, 432f};
+
+    public static float Convert(SpeedLimits limit)
+    {
+        return kmsToMs[(int)limit];
+    }
+}
+
 public enum TagColorScheme
 {
     /* Each lane (left / right 1-3) has its own color.
