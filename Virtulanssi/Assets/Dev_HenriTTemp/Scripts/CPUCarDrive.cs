@@ -35,7 +35,7 @@ public class CPUCarDrive : MonoBehaviour
 
     public Vector3 previousPosition;
     public float previousTime = -0.000001f;
-    public float previousSpeed = 0f;
+    public float speed = 0f;
 
     public Text speedText;
 
@@ -117,7 +117,6 @@ public class CPUCarDrive : MonoBehaviour
         bool targetChanged = false;
         if (Vector3.Dot(transform.forward, target - transform.position) < 0)
         {
-            Debug.Log("changed");
             targetChanged = true;
         }
         if (targetChanged)
@@ -229,14 +228,17 @@ public class CPUCarDrive : MonoBehaviour
         float targetSpeed = KmsToMs.Convert(previousNode.SpeedLimit);
         Vector3 newPos = new Vector3(transform.position.x, 0f, transform.position.z);
         float distanceTarveled = Vector3.Distance(newPos, previousPosition);
-        Debug.Log(distanceTarveled);
         float t = Time.time;
-        float currentSpeed = distanceTarveled / (t - previousTime);
+        float diff = t - previousTime;
+        speed = distanceTarveled / (t - previousTime);
+        if (speedText != null)
+        {
+            speedText.text = "Speed (km / h): " + speed * 3.6f;
+        }
         previousTime = t;
-        previousSpeed = currentSpeed;
-
+        Debug.Log("speed: " + speed);
         // update braking status
-        if (currentSpeed < targetSpeed && !tooMuchSpeed)
+        if (speed < targetSpeed && !tooMuchSpeed)
         {
             switch (brakingStatus)
             {
@@ -257,9 +259,8 @@ public class CPUCarDrive : MonoBehaviour
                     break;
             }
         }
-        else if (currentSpeed > targetSpeed || tooMuchSpeed)
+        else if (speed > targetSpeed || tooMuchSpeed)
         {
-            //Debug.Log("high speed, current: " + currentSpeed + ", target: " + targetSpeed);
             switch (brakingStatus)
             {
                 case BrakingStatus.NoBraking:
@@ -273,20 +274,24 @@ public class CPUCarDrive : MonoBehaviour
                     }
                     break;
                 case BrakingStatus.NoGass:
+                    motor = 0f;
                     brakingStatus = BrakingStatus.LightBraking;
                     break;
                 case BrakingStatus.LightBraking:
+                    motor = 0f;
                     brakingStatus = BrakingStatus.SteadyBraking;
                     break;
                 case BrakingStatus.SteadyBraking:
+                    motor = 0f;
                     brakingStatus = BrakingStatus.HardBraking;
                     previousBrakeForce = 2400f;
                     break;
                 case BrakingStatus.HardBraking:
+                    motor = 0f;
                     previousBrakeForce += 10f;
                     break;
             }
-            if (currentSpeed < 36)
+            if (speed < 36f)
             {
                 motor = 100f;
                 brakingStatus = BrakingStatus.NoBraking;
@@ -325,7 +330,6 @@ public class CPUCarDrive : MonoBehaviour
                 a.rightWheel.motorTorque = motor;
             }
         }
-        ShowSpeedInUI(distanceTarveled);
         previousPosition = newPos;
 
     }
